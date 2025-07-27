@@ -1,0 +1,32 @@
+name: pts_app_v1
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_secure_storage: any
+  http: any
+  image_picker: any
+  provider: any
+  dio: any
+  intl: ^0.20.2
+  shared_preferences: ^2.5.3
+  json_annotation: ^4.9.0
+  json_serializable: any
+  build_runner: any
+  jwt_decoder: any
+  google_fonts: ^6.2.1
+  photo_view: ^0.15.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+
+flutter:
+  uses-material-design: true

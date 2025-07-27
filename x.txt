@@ -1,0 +1,268 @@
+/* import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:pts_app_v1/constants/order_statuses.dart';
+import 'package:pts_app_v1/models/order_details_dto.dart';
+import 'package:pts_app_v1/services/order_service.dart';
+import 'package:pts_app_v1/services/photo_service.dart';
+import 'package:pts_app_v1/utils/jwt_helper.dart';
+import 'package:pts_app_v1/utils/secure_storage.dart';
+
+class OrderDetailScreen extends StatefulWidget {
+  final String orderId;
+
+  const OrderDetailScreen({super.key, required this.orderId});
+
+  @override
+  State<OrderDetailScreen> createState() => _OrderDetailScreenState();
+}
+
+class _OrderDetailScreenState extends State<OrderDetailScreen> {
+  final List<String> _imageUrls = [];
+  final _picker = ImagePicker();
+  bool _loading = true;
+  OrderDetailsDto? _order;
+  List<UserRole> _userRoles = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOrderDetails();
+    _loadRoles();
+  }
+
+  Future<void> _loadRoles() async {
+    final token = await SecureStorage.readAccessToken();
+    final roles = JwtHelper.getRoles(token!);
+    setState(() => _userRoles = roles);
+  }
+
+  Future<void> _loadOrderDetails() async {
+    try {
+      final order = await OrderService.getDetails(widget.orderId);
+      final urls =
+          await PhotoService.getOrderPhotos(order!.orderNumber.toString());
+      setState(() {
+        _order = order;
+        _imageUrls
+          ..clear()
+          ..addAll(urls);
+        _loading = false;
+      });
+    } catch (e) {
+      debugPrint("❌ Sipariş detayı alınamadı: $e");
+      setState(() => _loading = false);
+    }
+  }
+
+  String formatDateTime(DateTime? dt) {
+    if (dt == null) return '–';
+    return "${dt.day.toString().padLeft(2, '0')}.${dt.month.toString().padLeft(2, '0')}.${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}";
+  }
+
+  Future<void> _uploadPhotos() async {
+    final picked = await _picker.pickMultiImage(imageQuality: 80);
+    if (picked.isEmpty || _order == null) return;
+    final files = picked.map((x) => File(x.path)).toList();
+
+    try {
+      await PhotoService.uploadPhotos(_order!.id!, files);
+      await _loadOrderDetails();
+    } catch (e) {
+      debugPrint("❌ Fotoğraf yüklenirken hata: $e");
+      _showMessage("Fotoğraf yüklenemedi", isError: true);
+    }
+  }
+
+  Future<void> _captureMultiplePhotos() async {
+    if (_order == null) return;
+
+    final List<File> files = [];
+
+    while (true) {
+      final picked = await _picker.pickImage(source: ImageSource.camera);
+      if (picked == null) break;
+
+      files.add(File(picked.path));
+
+      // ✅ UYARIYI KESEN SATIR
+      if (!mounted) return;
+
+      final again = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text("Devam Et"),
+          content: const Text("Başka fotoğraf çekmek ister misiniz?"),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Hayır")),
+            TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text("Evet")),
+          ],
+        ),
+      );
+
+      if (again != true) break;
+    }
+
+    if (files.isNotEmpty) {
+      await PhotoService.uploadPhotos(_order!.id!, files);
+      await _loadOrderDetails();
+    }
+  }
+
+  Future<void> _deletePhoto(String fileName) async {
+    try {
+      await PhotoService.deletePhoto(_order!.id!, fileName);
+      await _loadOrderDetails();
+    } catch (e) {
+      _showMessage("Fotoğraf silinemedi", isError: true);
+    }
+  }
+
+  Future<void> _updateStatus(String newStatus) async {
+    try {
+      await OrderService.updateStatus(_order!.id!, newStatus);
+      setState(() => _order = _order!.copyWith(status: newStatus));
+      _showMessage("Durum güncellendi → ${OrderStatuses.label(newStatus)}");
+    } catch (e) {
+      _showMessage("Statü güncellenemedi", isError: true);
+    }
+  }
+
+  void _showMessage(String msg, {bool isError = false}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: isError ? Colors.red : Colors.green,
+    ));
+  }
+
+  Widget _buildStatusActionButton() {
+    if (_order == null) return const SizedBox();
+    final status = _order!.status;
+
+    final nextInfo = OrderStatuses.nextStatus(status);
+    if (nextInfo == null) return const SizedBox();
+
+    final allowedRoles = OrderStatusRoles.getAllowedRoles(status);
+    final hasPermission = _userRoles.any((r) => allowedRoles.contains(r));
+    if (!hasPermission) return const SizedBox();
+
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.sync),
+      label: Text(nextInfo['label']),
+      onPressed: () => _updateStatus(nextInfo['next']),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_order == null) {
+      return const Scaffold(body: Center(child: Text("Sipariş bulunamadı.")));
+    }
+
+    final o = _order!;
+    final statusLabel = OrderStatuses.label(o.status);
+
+    return Scaffold(
+      appBar: AppBar(title: Text("Sipariş #${o.orderNumber}")),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 👇 Detay Kartı
+            Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("📦 Ürün: ${o.productName ?? '-'}"),
+                      Text("⚖️ Miktar: ${o.productWeight ?? '-'}"),
+                      Text("📌 Birim: ${o.productType ?? '-'}"),
+                      Text("🔧 İşlem: ${o.processType ?? '-'}"),
+                      const Divider(),
+                      Text("🔄 Durum: $statusLabel"),
+                      Text("👤 Müşteri: ${o.createdByUserName}"),
+                      Text("🏢 Firma: ${o.customerCompanyName}"),
+                      Text("📅 Tarih: ${formatDateTime(o.createdAt)}"),
+                    ]),
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            _buildStatusActionButton(),
+            const SizedBox(height: 10),
+
+            ElevatedButton.icon(
+              icon: const Icon(Icons.photo_library),
+              label: const Text("Galeri Fotoğrafı Yükle"),
+              onPressed: _uploadPhotos,
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.camera_alt),
+              label: const Text("Kamera ile Çoklu Çekim"),
+              onPressed: _captureMultiplePhotos,
+            ),
+            const SizedBox(height: 16),
+
+            const Divider(),
+            Text("📸 Fotoğraflar",
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+
+            _imageUrls.isEmpty
+                ? const Text("Henüz fotoğraf yok.")
+                : GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _imageUrls.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                    ),
+                    itemBuilder: (context, index) {
+                      final imageUrl = _imageUrls[index];
+                      final fileName = Uri.parse(imageUrl).pathSegments.last;
+                      return Stack(
+                        children: [
+                          Positioned.fill(
+                            child: Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.broken_image),
+                            ),
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _deletePhoto(fileName),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+ */
