@@ -1,25 +1,16 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: Padding(
+    return AppScaffold(
+      body: Center(
+          child: Padding(
               padding: const EdgeInsets.all(20),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(18),

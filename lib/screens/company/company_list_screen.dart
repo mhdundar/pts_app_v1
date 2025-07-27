@@ -4,6 +4,7 @@ import 'package:pts_app_v1/models/company.dart';
 import 'package:pts_app_v1/screens/company/company_create_screen.dart';
 import 'package:pts_app_v1/screens/company/company_details_screen.dart';
 import 'package:pts_app_v1/services/company_service.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class CompanyListScreen extends StatefulWidget {
   const CompanyListScreen({super.key});
@@ -34,7 +35,7 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
@@ -48,19 +49,10 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
         icon: const Icon(Icons.add),
         label: const Text("Yeni Firma"),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: _isLoading
-                ? const CircularProgressIndicator(color: Colors.white)
-                : RefreshIndicator(
+      body: Center(
+          child: _isLoading
+              ? const CircularProgressIndicator(color: Colors.white)
+              : RefreshIndicator(
                     onRefresh: _fetchCompanies,
                     child: ListView.builder(
                       padding: const EdgeInsets.all(16),

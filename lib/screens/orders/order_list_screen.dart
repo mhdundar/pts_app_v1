@@ -7,6 +7,7 @@ import 'package:pts_app_v1/screens/orders/order_detail_screen.dart';
 import 'package:pts_app_v1/screens/orders/order_create_screen.dart';
 import 'package:pts_app_v1/services/order_service.dart';
 import 'package:pts_app_v1/utils/date_formatter.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class OrderListScreen extends StatefulWidget {
   const OrderListScreen({super.key});
@@ -149,7 +150,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: _createNewOrder,
         backgroundColor: Colors.teal,

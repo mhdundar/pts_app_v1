@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:pts_app_v1/models/company.dart';
 import 'package:pts_app_v1/services/company_service.dart';
 import 'package:pts_app_v1/utils/secure_storage.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class CompanyEditScreen extends StatefulWidget {
   final Company company;
@@ -78,7 +79,7 @@ class _CompanyEditScreenState extends State<CompanyEditScreen> {
   Widget build(BuildContext context) {
     final df = DateFormat('dd.MM.yyyy');
 
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(title: const Text("Şirket Güncelle")),
       body: Padding(
         padding: const EdgeInsets.all(16),

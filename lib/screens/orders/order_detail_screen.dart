@@ -8,6 +8,7 @@ import 'package:pts_app_v1/controllers/order_detail_controller.dart';
 import 'package:pts_app_v1/models/order.dart';
 import 'package:pts_app_v1/models/order_details_dto.dart';
 import 'package:pts_app_v1/services/order_service.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 import 'package:pts_app_v1/widgets/order/order_action_buttons.dart';
 import 'package:pts_app_v1/widgets/order/order_info_card.dart';
 import 'package:pts_app_v1/widgets/order/order_photo_grid.dart';
@@ -174,8 +175,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF203A43),
+    return AppScaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF203A43),
         title: Text(

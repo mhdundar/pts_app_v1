@@ -7,6 +7,7 @@ import 'package:pts_app_v1/services/order_service.dart';
 import 'package:pts_app_v1/constants/order_statuses.dart';
 import 'package:pts_app_v1/helpers/dialog_helpers.dart';
 import 'package:pts_app_v1/widgets/order/order_photo_grid.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class OrderCreateScreen extends StatefulWidget {
   const OrderCreateScreen({super.key});
@@ -125,12 +126,11 @@ class _OrderCreateScreenState extends State<OrderCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         title: Text('Yeni Sipariş Oluştur', style: GoogleFonts.poppins()),
         backgroundColor: const Color(0xFF203A43),
       ),
-      backgroundColor: const Color(0xFF2C5364),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
