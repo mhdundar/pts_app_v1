@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/customer.dart';
 import '../../services/customer_service.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class CustomerEditScreen extends StatefulWidget {
   final Customer customer;
@@ -71,7 +72,7 @@ class _CustomerEditScreenState extends State<CustomerEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(title: const Text("Müşteri Güncelle")),
       body: Padding(
         padding: const EdgeInsets.all(16),

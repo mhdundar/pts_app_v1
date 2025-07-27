@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/customer.dart';
 import '../../services/customer_service.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class CustomerCreateScreen extends StatefulWidget {
   const CustomerCreateScreen({super.key});
@@ -56,23 +57,15 @@ class _CustomerCreateScreenState extends State<CustomerCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text("Yeni Müşteri"),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1E1E2C), Color(0xFF2D2D44)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Center(
-          child: Padding(
+      body: Center(
+        child: Padding(
             padding: const EdgeInsets.all(16),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(18),

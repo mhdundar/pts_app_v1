@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/customer.dart';
 import '../../services/customer_service.dart';
 import 'customer_edit_screen.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class CustomerDetailScreen extends StatefulWidget {
   final String customerId;
@@ -45,7 +46,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(title: const Text("Müşteri Detayı")),
       body: FutureBuilder<Customer>(
         future: _future,

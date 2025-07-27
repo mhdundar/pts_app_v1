@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pts_app_v1/models/order_details_dto.dart';
 import 'package:pts_app_v1/models/order.dart';
 import 'package:pts_app_v1/services/order_service.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class SplitOrderScreen extends StatefulWidget {
   final OrderDetailsDto originalOrder;
@@ -172,8 +173,7 @@ class _SplitOrderScreenState extends State<SplitOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1B262C),
+    return AppScaffold(
       appBar: AppBar(
         title: Text("Siparişi Böl", style: GoogleFonts.poppins()),
       ),

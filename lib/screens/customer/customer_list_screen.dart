@@ -3,6 +3,7 @@ import '../../models/customer.dart';
 import '../../services/customer_service.dart';
 import 'customer_detail_screen.dart';
 import 'customer_create_screen.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class CustomerListScreen extends StatefulWidget {
   const CustomerListScreen({super.key});
@@ -22,7 +23,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(title: const Text("Müşteri Listesi")),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.push(

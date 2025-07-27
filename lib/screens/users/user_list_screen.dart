@@ -8,6 +8,7 @@ import 'package:pts_app_v1/screens/users/user_details_screen.dart';
 import 'package:pts_app_v1/services/user_service.dart';
 import 'package:pts_app_v1/widgets/user/user_filter_bar.dart';
 import 'package:pts_app_v1/widgets/user/user_list_card.dart';
+import 'package:pts_app_v1/widgets/common/app_scaffold.dart';
 
 class UserListScreen extends StatefulWidget {
   const UserListScreen({super.key});
@@ -156,7 +157,7 @@ class _UserListScreenState extends State<UserListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       floatingActionButton: _selectedUserIds.isEmpty
           ? FloatingActionButton.extended(
               onPressed: _openUserCreate,
@@ -169,16 +170,7 @@ class _UserListScreenState extends State<UserListScreen> {
               backgroundColor: Colors.red,
               label: Text("${_selectedUserIds.length} Sil"),
             ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: _loading
+      body: _loading
               ? const Center(
                   child: CircularProgressIndicator(color: Colors.white))
               : Column(
